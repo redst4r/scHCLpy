@@ -3,6 +3,8 @@ from scipy.spatial.distance import cdist
 import pandas as pd
 import numpy as np
 import anndata
+from scHCLpy import main
+import tqdm
 
 
 def process_adata(adata, reference_df):
@@ -12,7 +14,7 @@ def process_adata(adata, reference_df):
     shared_genes = sorted(list(adata_genes & refer_genes))
     adata_missing_genes = sorted(list(refer_genes - adata_genes))
 
-    print(len(shared_genes), len(adata_missing_genes))
+    print(f'{len(shared_genes)} reference genes found, {len(adata_missing_genes)} not found!')
 
     var_shared = pd.Series(shared_genes)
     var_missing = pd.DataFrame(adata_missing_genes)
@@ -39,32 +41,39 @@ def process_adata(adata, reference_df):
     return new_adata
 
 
-def calc_correlation_in_batches(adata, reference_df):
+def calc_correlation_in_batches(adata, reference_df, BATCHSIZE=1000):
     """
     unfortunately, sklearn and scipy dont have correlation distance for sparse matrices.
     but we can just batch the query adata into several sets of cells, calculate
     their correlation with all references and yield the result.
     Hence we never have to load the entire adata.X into memory
+    :params BATCHSIZE: number of cells processed simultaniously, anything around 1000 should fit into mem easily
     """
-    BATCHSIZE = 10000  # cells being done at once
+    BATCHSIZE = 1000  # cells being done at once
 
-    for i in range(0,len(adata), BATCHSIZE):
-        _tmp_adata = adata[i:i+BATCHSIZE]
+    adata_sorted = adata[:, reference_df.columns]
+    for i in tqdm.tqdm(range(0, len(adata_sorted), BATCHSIZE)):
+        _tmp_adata = adata_sorted[i:i+BATCHSIZE]
 
         X_query = _tmp_adata.X.A
         C = 1 - cdist(X_query, reference_df, 'correlation')
         C = pd.DataFrame(C, index=_tmp_adata.obs.index, columns=reference_df.index)
-
         yield C
+
 
 """
 from scHCLpy import main
 reference_df = main.load_reference()
+pd.read_csv(pathlib.Path(main.__file__).parent / 'data' / 'scHCL_ref.expr.csv.gz')
 """
-from main import load_reference
 def scHCL_adata(adata, verbose=False):
-    ref_df = load_reference()
+    ref_df = main.load_reference()
     transformed_adata = process_adata(adata, ref_df)
 
+    scHCL_df = []
+    for C_batch in calc_correlation_in_batches(transformed_adata, ref_df):
+        scHCL_batch = main.call_celltypes(C_batch)
+        scHCL_df.append(scHCL_batch)
 
-    C = 1 - cdist(transformed_query_df, ref_df, 'correlation')  # 1- since cdist calculates the correlation distance, i.e. if perfectly correlated cdist=0
+    scHCL_df = pd.concat(scHCL_df)
+    return scHCL_df

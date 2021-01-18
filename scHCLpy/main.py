@@ -286,6 +286,7 @@ def load_reference():
         cols.append(series)
     df_ref = pd.DataFrame(cols).T
 
+
     # log transform the ref
     df_ref = np.log(df_ref+1)
 
@@ -297,8 +298,6 @@ def adata_to_df(adata, use_raw):
                             index=adata.obs.index,
                             columns=adata.raw.var.index if use_raw else adata.var.index)
     return query_df
-
-
 
 
 def process_query_df(query_df, reference_df):
@@ -331,6 +330,15 @@ def process_query_df(query_df, reference_df):
 
     return test_df
 
+def call_celltypes(C):
+    ix_closest_ref_cell = np.argmax(C.values, axis=1)
+    name_closest_ref_cell = C.columns.values[ix_closest_ref_cell]
+    score = C.values[np.arange(len(ix_closest_ref_cell)), ix_closest_ref_cell]
+    hcl_celltype_call = pd.Series(name_closest_ref_cell, index=C.index, name='hcl_celltype')
+    hcl_celltype_score = pd.Series(score, index=C.index, name='hcl_score')
+    scHCL_df = pd.DataFrame({'hcl_score': hcl_celltype_score,
+                             'hcl_celltype': hcl_celltype_call})
+    return scHCL_df
 
 def scHCL(query_df, verbose=False):
 
@@ -344,6 +352,9 @@ def scHCL(query_df, verbose=False):
     # calculate the Pearson correlation between each query and reference cell
     if verbose:
         print('Calculating Pearson correlation matrix')
+
+    assert np.all(transformed_query_df.columns == ref_df.columns)
+
     C = 1 - cdist(transformed_query_df, ref_df, 'correlation')  # 1- since cdist calculates the correlation distance, i.e. if perfectly correlated cdist=0
     C = pd.DataFrame(C, index=transformed_query_df.index, columns=ref_df.index)
 
@@ -351,14 +362,8 @@ def scHCL(query_df, verbose=False):
     if verbose:
         print('Finding closest ref celltypes')
 
-    ix_closest_ref_cell = np.argmax(C.values, axis=1)
-    name_closest_ref_cell = C.columns.values[ix_closest_ref_cell]
-    score = C.values[np.arange(len(ix_closest_ref_cell)), ix_closest_ref_cell]
-    hcl_celltype_call = pd.Series(name_closest_ref_cell, index=C.index, name='hcl_celltype')
-    hcl_celltype_score = pd.Series(score, index=C.index, name='hcl_score')
+    scHCL_df = call_celltypes(C)
 
-    scHCL_df = pd.DataFrame({'hcl_score': hcl_celltype_score,
-                             'hcl_celltype': hcl_celltype_call})
     relevant_cts = get_closest_cells(C, n_closest=3)
     if verbose:
         print('clustermap')
