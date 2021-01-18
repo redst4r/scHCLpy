@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-# import scanpy as sc
+import scanpy as sc
 # import seaborn as sns
 from scipy.spatial.distance import cdist
 import pathlib
@@ -28,6 +28,14 @@ renames = {_:synonym_2symbol[_] for _ in not_found_genes if _ in synonym_2symbol
 """
 
 # there's a few genes that need to be renamed from the reference data
+manual_renames = {
+    'WISP1': 'CCN4',
+    'RNR1': 'MT-RNR1',
+    'COX1': 'MT-CO1',
+    'COX2': 'MT-CO2',
+    'NOV': 'CCN3',
+    'AGPAT9': 'GPAT3',
+}
 renames = {
     'WISP2': 'CCN5',
     'NOV': 'PLXNA1',
@@ -128,10 +136,10 @@ renames = {
     'ND1': 'IVNS1ABP',
     'ATP6': 'MT-ATP6',
     'ND2': 'MT-ND2',
-    'COX1': 'PTGS1',
     'ND3': 'MT-ND3',
     'ND4': 'MT-ND4',
     'RNR1': 'NR4A2',
+    'COX1': 'PTGS1',
     'COX2': 'PTGS2',
     'CYTB': 'MT-CYB',
     'ND6': 'MT-ND6',
@@ -236,6 +244,17 @@ HLA_renames = {
     'HLA.F': 'HLA-F',
 }
 
+# for some symbols, its just not clear what the map to because ambiguities
+unkown_renames = ['RNR1', 'COX1', 'COX2']
+
+
+def _load_reference_raw():
+    REF_FILE = DATADIR / 'scHCL_ref.expr.csv.gz'
+    # print(REF_FILE)
+    assert REF_FILE.exists()
+    df_ref = pd.read_csv(REF_FILE, sep=',', index_col=0).T
+    return df_ref
+
 
 def load_reference():
     """
@@ -246,24 +265,40 @@ def load_reference():
 
     Note that a log transform is applied (consistent with the query processing)
     """
-    REF_FILE = DATADIR / 'scHCL_ref.expr.csv.gz'
-    print(REF_FILE)
-    assert REF_FILE.exists()
-    df_ref = pd.read_csv(REF_FILE, sep=',', index_col=0).T
+    df_ref = _load_reference_raw()
+
+    # the renaming is a little iffy!
+    # drop the ones we cant map
+    df_ref.drop(unkown_renames, axis=1, inplace=True)
+    _tmp_renames = renames.copy()
+    _tmp_renames.update(HLA_renames)
+    _tmp_renames.update(manual_renames)  # this should overwrite some of the wrong automatic renames!
+
+    df_ref = df_ref.rename(_tmp_renames, axis=1)
+
+    # now some of genes might be present in mutiple columns (one col from the correct name, one from the rename)
+    # so lets just add up
+    cols = []
+    all_genes = df_ref.columns.unique()
+    for gene in all_genes:
+        series = df_ref[[gene]].sum(1)  # [[]] needed: if just single occurance [genename] would be a series that we cant sum across
+        series.name = gene
+        cols.append(series)
+    df_ref = pd.DataFrame(cols).T
 
     # log transform the ref
     df_ref = np.log(df_ref+1)
 
-    df_ref = df_ref.rename(renames, axis=1)
-    df_ref = df_ref.rename(HLA_renames, axis=1)
     return df_ref
 
 
-def adata_to_df(adata):
-    query_df = pd.DataFrame(adata.X.A,
+def adata_to_df(adata, use_raw):
+    query_df = pd.DataFrame(adata.raw.X.A if use_raw else adata.X.A,
                             index=adata.obs.index,
-                            columns=adata.var.index)
+                            columns=adata.raw.var.index if use_raw else adata.var.index)
     return query_df
+
+
 
 
 def process_query_df(query_df, reference_df):
