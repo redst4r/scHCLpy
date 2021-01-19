@@ -286,7 +286,6 @@ def load_reference():
         cols.append(series)
     df_ref = pd.DataFrame(cols).T
 
-
     # log transform the ref
     df_ref = np.log(df_ref+1)
 
@@ -330,6 +329,27 @@ def process_query_df(query_df, reference_df):
 
     return test_df
 
+
+def call_celltypes2(C, n_best):
+    # nastyu, since argsort is ascending! firsr reverse, then take the topN
+    ix_sorted = np.argsort(C.values, axis=1)[:,::-1][:, :n_best]
+    name_closest_ref_cell = C.columns.values[ix_sorted]
+
+    # the indexing gets a little funky, better do it one by one:
+    # 1. top Hit
+    # 2. 2nd top Hit
+    # ....
+    score = []
+    for i in range(n_best):
+        s = C.values[np.arange(len(ix_sorted)), ix_sorted[:,i]]
+        score.append(s)
+    score = np.vstack(score).T
+
+    hcl_celltype_call = pd.DataFrame(name_closest_ref_cell, index=C.index, columns=[f'hcl_celltype_top{1+_}' for _ in range(n_best)])
+    hcl_celltype_score = pd.DataFrame(score, index=C.index, columns=[f'hcl_score_top{1+_}' for _ in range(n_best)])
+    scHCL_df = pd.concat([hcl_celltype_call, hcl_celltype_score], axis=1)
+    return scHCL_df
+
 def call_celltypes(C):
     ix_closest_ref_cell = np.argmax(C.values, axis=1)
     name_closest_ref_cell = C.columns.values[ix_closest_ref_cell]
@@ -340,7 +360,8 @@ def call_celltypes(C):
                              'hcl_celltype': hcl_celltype_call})
     return scHCL_df
 
-def scHCL(query_df, verbose=False):
+from sklearn.metrics import pairwise_distances
+def scHCL(query_df, verbose=False, n_cores=1):
 
     ref_df = load_reference()
     transformed_query_df = process_query_df(query_df, ref_df)
@@ -355,7 +376,9 @@ def scHCL(query_df, verbose=False):
 
     assert np.all(transformed_query_df.columns == ref_df.columns)
 
-    C = 1 - cdist(transformed_query_df, ref_df, 'correlation')  # 1- since cdist calculates the correlation distance, i.e. if perfectly correlated cdist=0
+    # C = 1 - cdist(transformed_query_df, ref_df, 'correlation')  # 1- since cdist calculates the correlation distance, i.e. if perfectly correlated cdist=0
+
+    C = 1 - pairwise_distances(transformed_query_df, ref_df, metric='correlation', n_jobs=n_cores)
     C = pd.DataFrame(C, index=transformed_query_df.index, columns=ref_df.index)
 
     # find clostest matching reference type
@@ -383,3 +406,56 @@ def get_closest_cells(C, n_closest):
         names = C.columns.values[ix_best]
         ref_cells = ref_cells | set(names)  # add them to the reference cells
     return list(ref_cells)
+
+
+def celltype_rename(ct):
+
+    if ct.endswith('.'):
+        ct = ct[:-1]
+    # split away the number in the end, which just indices the replicate of a celltype, i.e. Stomach1., .Stomach2.
+    if ct[-1].isnumeric():
+        ct = ct[:-1]
+
+    if ct.startswith('B.cell')or ct.startswith('Proliferating.B.cell'):
+        return 'B.cell'
+
+    if ct.startswith('Basal.cell'):
+        return 'Basal.cell'
+
+    if ct.startswith('Endothelial.cell') or ct.startswith('Vascular.endothelial') or ct.startswith('Glomerular.endothelial.'):
+        return 'Endothelial.cell'
+
+    if ct.startswith('Enteric.nerval.cell'):
+        return 'Enteric.nerval.cell'
+
+    if ct.startswith('Fibroblast'):
+        return 'Fibroblast'
+
+    if ct.startswith('Gastric.chief.cell'):
+        return 'Gastric.chief.cell'
+
+    if ct.startswith('Goblet.cell'):
+        return 'Goblet.cell'
+
+    if ct.startswith('Macrophage') or ct.startswith('M1.Macrophage') or ct.startswith('M2.Macrophage') or ct.startswith('Monocyte'):
+        return 'Macrophage'
+
+    if ct.startswith('Mast.cell'):
+        return 'Mast.cell'
+
+    if ct.startswith('Neutrophil'):
+        return 'Neutrophil'
+
+    if ct.startswith('Parietal.cell'):
+        return 'Parietal.cell'
+
+    if ct.startswith('Smooth.muscle.cell'):
+        return 'Smooth.muscle.cell'
+    if ct.startswith('Stromal.cell'):
+        return 'Stromal.cell'
+    if ct.startswith('T.cell') or ct.startswith('CD8.T.cell'):
+        return 'T.cell'
+    if ct.startswith('Vascular.endothelial.cell'):
+        return 'Vascular.endothelial.cell'
+
+    return ct

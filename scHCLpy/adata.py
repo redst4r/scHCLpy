@@ -5,6 +5,7 @@ import numpy as np
 import anndata
 from scHCLpy import main
 import tqdm
+from sklearn.metrics import pairwise_distances
 
 
 def process_adata(adata, reference_df):
@@ -41,7 +42,7 @@ def process_adata(adata, reference_df):
     return new_adata
 
 
-def calc_correlation_in_batches(adata, reference_df, BATCHSIZE=1000):
+def calc_correlation_in_batches(adata, reference_df, BATCHSIZE=1000, n_cores=1):
     """
     unfortunately, sklearn and scipy dont have correlation distance for sparse matrices.
     but we can just batch the query adata into several sets of cells, calculate
@@ -56,7 +57,9 @@ def calc_correlation_in_batches(adata, reference_df, BATCHSIZE=1000):
         _tmp_adata = adata_sorted[i:i+BATCHSIZE]
 
         X_query = _tmp_adata.X.A
-        C = 1 - cdist(X_query, reference_df, 'correlation')
+        # C = 1 - cdist(X_query, reference_df, 'correlation')
+
+        C = 1 - pairwise_distances(X_query, reference_df, metric='correlation', n_jobs=n_cores)
         C = pd.DataFrame(C, index=_tmp_adata.obs.index, columns=reference_df.index)
         yield C
 
@@ -66,12 +69,12 @@ from scHCLpy import main
 reference_df = main.load_reference()
 pd.read_csv(pathlib.Path(main.__file__).parent / 'data' / 'scHCL_ref.expr.csv.gz')
 """
-def scHCL_adata(adata, verbose=False):
+def scHCL_adata(adata, verbose=False, n_cores=1):
     ref_df = main.load_reference()
     transformed_adata = process_adata(adata, ref_df)
 
     scHCL_df = []
-    for C_batch in calc_correlation_in_batches(transformed_adata, ref_df):
+    for C_batch in calc_correlation_in_batches(transformed_adata, ref_df, n_cores=n_cores):
         scHCL_batch = main.call_celltypes(C_batch)
         scHCL_df.append(scHCL_batch)
 
