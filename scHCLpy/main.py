@@ -4,13 +4,19 @@ import scanpy as sc
 # import seaborn as sns
 from scipy.spatial.distance import cdist
 import pathlib
-
-
-# class HCL():
-#     def __init__(self):
-#         self.reference_df = load_reference()
+from sklearn.metrics import pairwise_distances
 
 DATADIR = pathlib.Path(__file__).parent / 'data'
+
+
+class HCL():
+    def __init__(self):
+        self.reference_df = load_reference()
+
+
+    def query(self, query_df):
+        transformed_query = process_query_df(query_df, self.reference_df)
+
 
 def test_case():
     """
@@ -250,7 +256,6 @@ unkown_renames = ['RNR1', 'COX1', 'COX2']
 
 def _load_reference_raw():
     REF_FILE = DATADIR / 'scHCL_ref.expr.csv.gz'
-    # print(REF_FILE)
     assert REF_FILE.exists()
     df_ref = pd.read_csv(REF_FILE, sep=',', index_col=0).T
     return df_ref
@@ -360,7 +365,6 @@ def call_celltypes(C):
                              'hcl_celltype': hcl_celltype_call})
     return scHCL_df
 
-from sklearn.metrics import pairwise_distances
 def scHCL(query_df, verbose=False, n_cores=1):
 
     ref_df = load_reference()
@@ -422,7 +426,7 @@ def celltype_rename(ct):
     if ct.startswith('Basal.cell'):
         return 'Basal.cell'
 
-    if ct.startswith('Endothelial.cell') or ct.startswith('Vascular.endothelial') or ct.startswith('Glomerular.endothelial.'):
+    if ct.startswith('Endothelial.cell') or ct.startswith('Vascular.endothelial') or ct.startswith('Glomerular.endothelial.') or ct.startswith('Endo..m..Placenta'):
         return 'Endothelial.cell'
 
     if ct.startswith('Enteric.nerval.cell'):
@@ -437,7 +441,7 @@ def celltype_rename(ct):
     if ct.startswith('Goblet.cell'):
         return 'Goblet.cell'
 
-    if ct.startswith('Macrophage') or ct.startswith('M1.Macrophage') or ct.startswith('M2.Macrophage') or ct.startswith('Monocyte'):
+    if ct.startswith('Macrophage') or ct.startswith('M1.Macrophage') or ct.startswith('M2.Macrophage') or ct.startswith('Monocyte') or ct.startswith('dM1.Placenta_VentoTormo') or ct.startswith('dM2.Placenta_VentoTormo'):
         return 'Macrophage'
 
     if ct.startswith('Mast.cell'):
@@ -457,5 +461,10 @@ def celltype_rename(ct):
         return 'T.cell'
     if ct.startswith('Vascular.endothelial.cell'):
         return 'Vascular.endothelial.cell'
+
+    if ct.startswith('Enterocyte.progenitor'):
+        return 'Enterocyte.progenitor'
+    if ct.startswith('Enterocyte_'):
+        return 'Enterocyte'
 
     return ct

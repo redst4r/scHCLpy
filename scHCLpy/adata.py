@@ -64,19 +64,18 @@ def calc_correlation_in_batches(adata, reference_df, BATCHSIZE=1000, n_cores=1):
         yield C
 
 
-"""
-from scHCLpy import main
-reference_df = main.load_reference()
-pd.read_csv(pathlib.Path(main.__file__).parent / 'data' / 'scHCL_ref.expr.csv.gz')
-"""
 def scHCL_adata(adata, verbose=False, n_cores=1):
     ref_df = main.load_reference()
     transformed_adata = process_adata(adata, ref_df)
 
     scHCL_df = []
+    scHCL_df_extended_Celltypes = []
     for C_batch in calc_correlation_in_batches(transformed_adata, ref_df, n_cores=n_cores):
         scHCL_batch = main.call_celltypes(C_batch)
+        scHCL_batch_extended = main.call_celltypes2(C_batch, n_best=10)
         scHCL_df.append(scHCL_batch)
+        scHCL_df_extended_Celltypes.append(scHCL_batch_extended)
 
     scHCL_df = pd.concat(scHCL_df)
-    return scHCL_df
+    scHCL_df_extended_Celltypes = pd.concat(scHCL_df_extended_Celltypes)
+    return scHCL_df, scHCL_df_extended_Celltypes
