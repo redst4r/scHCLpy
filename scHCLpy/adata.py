@@ -1,11 +1,47 @@
 from scipy import sparse
-from scipy.spatial.distance import cdist
 import pandas as pd
 import numpy as np
 import anndata
 from scHCLpy import main
 import tqdm
 from sklearn.metrics import pairwise_distances
+from scHCLpy import reference_hcl
+
+
+def construct_reference(adata, celltype_field):
+    """
+    given an annotated dataset of celltypes, construct the reference:
+    - for each celltype, subsample 100 cells
+    - form the average expression, normalized to 100k umis
+    - round
+    - between all celltypes: calculate top20 DE genes
+    """
+    n_cells = 100
+    n_repeats = 3
+    topN_genes = 20
+
+    adata_ref_x = []
+    adata_ref_obs = []
+    for ct in adata.obs[celltype_field].unique():
+        A = adata[adata.obs[celltype_field]==ct]
+        for i in range(n_repeats):
+            ix = np.random.choice(len(A), size=np.minimum(n_cells, len(A)), replace=False)
+            X = A[ix].X.A
+            X = X.sum(0)
+            X = 1e5 * X/X.sum()
+            X = np.log(1+X)
+            adata_ref_x.append(X)
+            adata_ref_obs.append({'celltype': ct, 'repeat': i})
+
+
+class HCLReference_adata():
+    def __init__(self, reference_df):
+        self.reference_df = reference_df
+
+    def query(self, adata, n_cores=1):
+        transformed_adata = process_adata(adata, self.reference_df)
+        scHCL_df, scHCL_df_extended_Celltypes = call_celltypes(transformed_adata, self.reference_df, n_cores)
+        return scHCL_df, scHCL_df_extended_Celltypes
 
 
 def process_adata(adata, reference_df):
@@ -58,16 +94,16 @@ def calc_correlation_in_batches(adata, reference_df, BATCHSIZE=1000, n_cores=1):
 
         X_query = _tmp_adata.X.A
         # C = 1 - cdist(X_query, reference_df, 'correlation')
-
         C = 1 - pairwise_distances(X_query, reference_df, metric='correlation', n_jobs=n_cores)
         C = pd.DataFrame(C, index=_tmp_adata.obs.index, columns=reference_df.index)
         yield C
 
 
-def scHCL_adata(adata, verbose=False, n_cores=1):
-    ref_df = main.load_reference()
-    transformed_adata = process_adata(adata, ref_df)
-
+def call_celltypes(transformed_adata, ref_df, n_cores):
+    """
+    given transformed query data, for each cell in there, grind out the most
+    correlated reference celltypes
+    """
     scHCL_df = []
     scHCL_df_extended_Celltypes = []
     for C_batch in calc_correlation_in_batches(transformed_adata, ref_df, n_cores=n_cores):
@@ -78,4 +114,18 @@ def scHCL_adata(adata, verbose=False, n_cores=1):
 
     scHCL_df = pd.concat(scHCL_df)
     scHCL_df_extended_Celltypes = pd.concat(scHCL_df_extended_Celltypes)
+
+    return scHCL_df, scHCL_df_extended_Celltypes
+
+
+def scHCL_adata(adata, verbose=False, n_cores=1):
+    """
+    previous main function
+    """
+
+    ref_df = reference_hcl.load_HCL_reference()
+    transformed_adata = process_adata(adata, ref_df)
+
+    scHCL_df, scHCL_df_extended_Celltypes = call_celltypes(transformed_adata, ref_df, n_cores)
+
     return scHCL_df, scHCL_df_extended_Celltypes
