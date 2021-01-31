@@ -284,7 +284,7 @@ def celltype_rename(ct):
     if ct.startswith('Basal.cell'):
         return 'Basal.cell'
 
-    if ct.startswith('Endothelial.cell') or ct.startswith('Vascular.endothelial') or ct.startswith('Glomerular.endothelial.') or ct.startswith('Endo..m..Placenta'):
+    if ct.startswith('Endothelial.cell') or ct.startswith('Vascular.endothelial') or ct.startswith('Glomerular.endothelial.') or ct.startswith('Endo..m..Placenta') or ct.startswith('PV1.Placenta_VentoTormo') or ct.startswith('Endo.L.Placenta'):
         return 'Endothelial.cell'
 
     if ct.startswith('Enteric.nerval.cell'):
@@ -324,5 +324,8 @@ def celltype_rename(ct):
         return 'Enterocyte.progenitor'
     if ct.startswith('Enterocyte_'):
         return 'Enterocyte'
+
+    if ct.startswith('dNK') or ct.startswith('Blood.NK'):
+        return 'NK'
 
     return ct

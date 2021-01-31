@@ -9,6 +9,7 @@ from scHCLpy import reference_hcl
 
 
 def construct_reference(adata, celltype_field):
+    # TODO
     """
     given an annotated dataset of celltypes, construct the reference:
     - for each celltype, subsample 100 cells
@@ -129,3 +130,28 @@ def scHCL_adata(adata, verbose=False, n_cores=1):
     scHCL_df, scHCL_df_extended_Celltypes = call_celltypes(transformed_adata, ref_df, n_cores)
 
     return scHCL_df, scHCL_df_extended_Celltypes
+
+
+def annotate_refined(adata, n_min:int, scHCL_df, scHCL_df_extended_Celltypes):
+    """
+    The celltypes in the original scHCL are a bit nasty, with nonstandard names
+    and the same celltype being annotated with 3 diferent strings/names
+
+    we simplify the nomenclature here, and also get rid of "rare" celltypes
+    that are probably mistakes in annotation
+    """
+    CORRELATION_CUTOFF = 0.25 # any cell with correlation less than this will be classified as other
+
+    # adata.obs=adata.obs.merge(dfadata, left_index=True, right_index=True)
+    scHCL_df['hcl_refined'] = scHCL_df['hcl_celltype'].apply(reference_hcl.celltype_rename)
+
+    # filter away the infrequent annotations
+    common_cts = scHCL_df['hcl_refined'].value_counts()
+    common_cts = common_cts[common_cts > n_min].index
+    scHCL_df['hcl_refined'] = scHCL_df['hcl_refined'].apply(lambda x: x if x in common_cts else 'other')
+
+    # also mark anything thats got shady correlations as "other" since it doesnt
+    # really match any reference celltypes
+    scHCL_df.loc[scHCL_df['hcl_score'] < CORRELATION_CUTOFF, 'hcl_refined'] = 'other'
+
+    return scHCL_df
