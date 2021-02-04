@@ -119,7 +119,7 @@ def call_celltypes(transformed_adata, ref_df, n_cores):
     return scHCL_df, scHCL_df_extended_Celltypes
 
 
-def scHCL_adata(adata, verbose=False, n_cores=1):
+def scHCL_adata(adata, verbose=False, n_cores=1, n_min=10):
     """
     previous main function
     """
@@ -128,11 +128,12 @@ def scHCL_adata(adata, verbose=False, n_cores=1):
     transformed_adata = process_adata(adata, ref_df)
 
     scHCL_df, scHCL_df_extended_Celltypes = call_celltypes(transformed_adata, ref_df, n_cores)
+    scHCL_df = annotate_refined(n_min, scHCL_df)
 
     return scHCL_df, scHCL_df_extended_Celltypes
 
 
-def annotate_refined(adata, n_min:int, scHCL_df, scHCL_df_extended_Celltypes):
+def annotate_refined(n_min:int, scHCL_df):
     """
     The celltypes in the original scHCL are a bit nasty, with nonstandard names
     and the same celltype being annotated with 3 diferent strings/names
@@ -142,7 +143,6 @@ def annotate_refined(adata, n_min:int, scHCL_df, scHCL_df_extended_Celltypes):
     """
     CORRELATION_CUTOFF = 0.25 # any cell with correlation less than this will be classified as other
 
-    # adata.obs=adata.obs.merge(dfadata, left_index=True, right_index=True)
     scHCL_df['hcl_refined'] = scHCL_df['hcl_celltype'].apply(reference_hcl.celltype_rename)
 
     # filter away the infrequent annotations
