@@ -118,15 +118,23 @@ def calc_correlation_in_batches(adata, reference_df, BATCHSIZE=1000, n_cores=1):
     """
     BATCHSIZE = 1000  # cells being done at once
 
-    adata_sorted = adata[:, reference_df.columns]
-    for i in tqdm.tqdm(range(0, len(adata_sorted), BATCHSIZE)):
-        _tmp_adata = adata_sorted[i:i+BATCHSIZE]
+    # to get rid of these
+    """
+    anndata.py:1094: FutureWarning: is_categorical is deprecated and will be removed in a future version.  Use is_categorical_dtype instead
+    """
+    import warnings
+    with warnings.catch_warnings():
+        warnings.simplefilter(action='ignore', category=FutureWarning)
 
-        X_query = _tmp_adata.X.A
-        # C = 1 - cdist(X_query, reference_df, 'correlation')
-        C = 1 - pairwise_distances(X_query, reference_df, metric='correlation', n_jobs=n_cores)
-        C = pd.DataFrame(C, index=_tmp_adata.obs.index, columns=reference_df.index)
-        yield C
+        adata_sorted = adata[:, reference_df.columns]
+        for i in tqdm.tqdm(range(0, len(adata_sorted), BATCHSIZE)):
+            _tmp_adata = adata_sorted[i:i+BATCHSIZE]
+
+            X_query = _tmp_adata.X.A
+            # C = 1 - cdist(X_query, reference_df, 'correlation')
+            C = 1 - pairwise_distances(X_query, reference_df, metric='correlation', n_jobs=n_cores)
+            C = pd.DataFrame(C, index=_tmp_adata.obs.index, columns=reference_df.index)
+            yield C
 
 
 def call_celltypes(transformed_adata, ref_df, n_cores):
