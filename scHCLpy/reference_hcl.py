@@ -328,4 +328,6 @@ def celltype_rename(ct):
     if ct.startswith('dNK') or ct.startswith('Blood.NK'):
         return 'NK'
 
+    if ct.startswith('Pit.cell_'):
+        return 'Pit cell'
     return ct

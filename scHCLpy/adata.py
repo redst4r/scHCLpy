@@ -40,12 +40,37 @@ class HCLReference_adata():
         self.reference_df = reference_df
 
     def query(self, adata, n_cores=1):
+        """
+        query all cells within the AnnData again this reference
+        :params adata:
+        :params n_cores:
+        :returns: two pd.DataFrames, the first with some basic cell type annotation (best match)
+                  the second dataFrame has the top 10 matches
+        """
         transformed_adata = process_adata(adata, self.reference_df)
         scHCL_df, scHCL_df_extended_Celltypes = call_celltypes(transformed_adata, self.reference_df, n_cores)
         return scHCL_df, scHCL_df_extended_Celltypes
 
+    def get_celltypes(self):
+        """
+        Returns a list of all cell types in the reference
+        """
+        return self.reference_df.index.values
+
+    def get_genes(self):
+        """
+        Returns a list of all genes in the reference
+        """
+        return self.reference_df.columns.values
 
 def process_adata(adata, reference_df):
+    """
+    matches the set of genes between query adata and reference to a common
+    subset. Also transforms the query data into normalized log counts
+    (required to compare against the reference, which had the same transformation).
+
+    :returns: AnnData object with a subset of genes, .X is normalized log counts
+    """
 
     adata_genes = set(adata.raw.var_names)
     refer_genes = set(reference_df.columns)
@@ -85,7 +110,11 @@ def calc_correlation_in_batches(adata, reference_df, BATCHSIZE=1000, n_cores=1):
     but we can just batch the query adata into several sets of cells, calculate
     their correlation with all references and yield the result.
     Hence we never have to load the entire adata.X into memory
+
+    :params adata: query AnnData. Each cell is matched against the reference
+    :params reference_df: DataFrame of reference expression values
     :params BATCHSIZE: number of cells processed simultaniously, anything around 1000 should fit into mem easily
+    :params n_cores: CPUs used to do the correlation calculation
     """
     BATCHSIZE = 1000  # cells being done at once
 
@@ -128,18 +157,17 @@ def scHCL_adata(adata, verbose=False, n_cores=1, n_min=10):
     transformed_adata = process_adata(adata, ref_df)
 
     scHCL_df, scHCL_df_extended_Celltypes = call_celltypes(transformed_adata, ref_df, n_cores)
-    scHCL_df = annotate_refined(n_min, scHCL_df)
+    scHCL_df = annotate_refined(scHCL_df, n_min)
 
     return scHCL_df, scHCL_df_extended_Celltypes
 
 
-def annotate_refined(n_min:int, scHCL_df):
+def annotate_refined(scHCL_df, n_min:int):
     """
     The celltypes in the original scHCL are a bit nasty, with nonstandard names
     and the same celltype being annotated with 3 diferent strings/names
-
-    we simplify the nomenclature here, and also get rid of "rare" celltypes
-    that are probably mistakes in annotation
+    We simplify the nomenclature here, and also get rid of "rare" celltypes
+    that are probably mistakes in annotation.
     """
     CORRELATION_CUTOFF = 0.25 # any cell with correlation less than this will be classified as other
 
