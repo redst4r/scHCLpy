@@ -325,4 +325,12 @@ def celltype_rename(ct):
     if ct.startswith('Enterocyte_'):
         return 'Enterocyte'
 
+    if ct.startswith('Delta.cell'):
+        return 'Delta.cell'
+
+    if ct.startswith('Conventional.dendritic.cell'):
+        return 'Conventional.dendritic.cell'
+
+    if ct.startswith('dS1.Placenta_VentoTormo') or ct.startswith('dS2.Placenta_VentoTormo') or ct.startswith('dS3.Placenta_VentoTormo'):
+        return 'Stromal.VentoTormo'
     return ct
