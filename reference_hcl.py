@@ -299,7 +299,7 @@ def celltype_rename(ct):
     if ct.startswith('Goblet.cell'):
         return 'Goblet.cell'
 
-    if ct.startswith('Macrophage') or ct.startswith('M1.Macrophage') or ct.startswith('M2.Macrophage') or ct.startswith('Monocyte') or ct.startswith('dM1.Placenta_VentoTormo') or ct.startswith('dM2.Placenta_VentoTormo'):
+    if ct.startswith('Macrophage') or ct.startswith('M1.Macrophage') or ct.startswith('M2.Macrophage') or ct.startswith('Monocyte') or ct.startswith('dM1.Placenta_VentoTormo') or ct.startswith('dM2.Placenta_VentoTormo') or ct.startswith('M3.Placenta'):
         return 'Macrophage'
 
     if ct.startswith('Mast.cell'):
@@ -315,6 +315,11 @@ def celltype_rename(ct):
         return 'Smooth.muscle.cell'
     if ct.startswith('Stromal.cell'):
         return 'Stromal.cell'
+    if ct.startswith('dS1.Placenta_VentoTormo') or ct.startswith('dS2.Placenta_VentoTormo') or ct.startswith('dS3.Placenta_VentoTormo'):
+        return 'Stromal.cell'
+    if ct.startswith('dS1.Placenta VentoTormo') or ct.startswith('dS2.Placenta VentoTormo') or ct.startswith('dS3.Placenta VentoTormo'):
+        return 'Stromal.cell'
+
     if ct.startswith('T.cell') or ct.startswith('CD8.T.cell'):
         return 'T.cell'
     if ct.startswith('Vascular.endothelial.cell'):
@@ -325,12 +330,29 @@ def celltype_rename(ct):
     if ct.startswith('Enterocyte_'):
         return 'Enterocyte'
 
-    if ct.startswith('Delta.cell'):
-        return 'Delta.cell'
-
+    if ct.startswith('Myeloid.cell'):
+        return 'Myeloid.cell'
+    if ct.startswith('Neuron'):
+        return 'Neuron'
     if ct.startswith('Conventional.dendritic.cell'):
         return 'Conventional.dendritic.cell'
 
-    if ct.startswith('dS1.Placenta_VentoTormo') or ct.startswith('dS2.Placenta_VentoTormo') or ct.startswith('dS3.Placenta_VentoTormo'):
-        return 'Stromal.VentoTormo'
+    if ct.startswith('Unknown.Adult'):
+        return 'other'
+    if ct.startswith('Alpha.cell.Adult.Pancreas'):
+        return 'Alpha.cell.Adult.Pancreas'
+
+    if ct.startswith('Delta.cell.Adult.Pancreas'):
+        return 'Delta.cell.Adult.Pancreas'
+    if ct.startswith('Epsilon.cell.Adult.Pancreas'):
+        return 'Epsilon.cell.Adult.Pancreas'
+
+    # Lung
+    if ct.startswith('AT1.cell'):
+        return 'AT1.cell'
+    if ct.startswith('Ciliated.cell'):
+        return 'Ciliated.cell'
+    if ct.startswith('Mesothelial.cell'):
+        return 'Mesothelial.cell'
+
     return ct
