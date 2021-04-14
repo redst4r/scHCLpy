@@ -254,8 +254,8 @@ def load_HCL_reference():
 
     df_ref = df_ref.rename(_tmp_renames, axis=1)
 
-    # now some of genes might be present in mutiple columns (one col from the correct name, one from the rename)
-    # so lets just add up
+    # now some of genes might be present in mutiple columns
+    # (one col from the correct name, one from the rename) so lets just add up
     cols = []
     all_genes = df_ref.columns.unique()
     for gene in all_genes:
@@ -270,11 +270,83 @@ def load_HCL_reference():
     return df_ref
 
 
+def refined_but_coarser(ct):
+
+    immune = [
+        'B.cell',
+        'T.cell',
+        'Macrophage',
+        'Mast.cell',
+        'Neutrophil',
+        'Myeloid.cell',
+        'Conventional.dendritic.cell',
+        'Conventional.dendritic.cell.Adult.Lung',
+        'Conventional.dendritic.cell_LYZ.high.Adult.Thyroid',
+        'Conventional.dendritic.cell_CCL17.high.Adult.Thyroid',
+        'Dendritic.cell.Fetal.Pancreas',
+        'DC1.Placenta VentoTormo',
+        'DC1.Placenta_VentoTormo'
+        'Plasma.Placenta_VentoTormo',
+        'Plasmacytoid.dendritic.cell.Adult.Thyroid',
+        'NK',
+        'Granulocyte.Adult.Omentum',
+        'M3.Placenta_VentoTormo',
+        'GMP.Lympho.Myeloid.Progenitor_Paresh',
+        'MLP.Lympho.Myeloid.Progenitor_Paresh',
+        'MO.Placenta_VentoTormo',
+        'Myeloid.cell.Adult.Lung',
+        'Proliferating.T.cell.Adult.Lung',
+        'LMPP.Lympho.Myeloid.Progenitor_Paresh',
+        'Lymphocyte.Adult.Epityphlon',
+
+
+    ]
+    stroma = [
+        'Fibroblast',
+        'Endothelial.cell',
+        'Smooth.muscle.cell',
+        'Stromal.cell',
+        'Vascular.endothelial.cell',
+        'dS1.Placenta_VentoTormo',
+        'dS2.Placenta_VentoTormo',
+        'dS3.Placenta_VentoTormo',
+        'Myofibroblast_POSTN.high.Adult.Artery',
+    ]
+    other_stuff = ['Erythroid.cell.Placenta_Tsang', 'Neuron']
+
+    # Unknown: HCL correlation is TOO LOW to determine
+    unknown = ['other']
+
+    epi_esophagus =[
+    'Basal.cell',
+    'Kerationcyte.Adult.Esophagus',
+    'Epithelial.cell_KRT13.high.Adult.Esophagus',
+    'Epithelial.cell_KRT4.high.Adult.Esophagus',
+    'Epithelial.cell_KRT17.high.Adult.Esophagus',
+    'Epithelial.cell_KRT7.high.Adult.Esophagus',
+    ]
+
+    if ct in immune:
+        return 'immune'
+    elif ct in stroma:
+        return 'stroma'
+    elif ct in epi_esophagus:
+        return 'epithelial_eso'
+    elif ct in other_stuff:
+        return 'other'
+    # Unknown: HCL correlation is TOO LOW to determine
+    elif ct in unknown:
+        return 'unknown'
+    else:
+        return 'epithelial'
+
+
 def celltype_rename(ct):
 
     if ct.endswith('.'):
         ct = ct[:-1]
-    # split away the number in the end, which just indices the replicate of a celltype, i.e. Stomach1., .Stomach2.
+    # split away the number in the end, which just indices
+    # the replicate of a celltype, i.e. Stomach1., .Stomach2.
     if ct[-1].isnumeric():
         ct = ct[:-1]
 
@@ -315,9 +387,8 @@ def celltype_rename(ct):
         return 'Smooth.muscle.cell'
     if ct.startswith('Stromal.cell'):
         return 'Stromal.cell'
-    if ct.startswith('dS1.Placenta_VentoTormo') or ct.startswith('dS2.Placenta_VentoTormo') or ct.startswith('dS3.Placenta_VentoTormo'):
-        return 'Stromal.cell'
-    if ct.startswith('dS1.Placenta VentoTormo') or ct.startswith('dS2.Placenta VentoTormo') or ct.startswith('dS3.Placenta VentoTormo'):
+
+    if ct.startswith('dS1.Placenta VentoTormo') or ct.startswith('dS2.Placenta VentoTormo') or ct.startswith('dS3.Placenta VentoTormo') or ct.startswith('dS1.Placenta_VentoTormo') or ct.startswith('dS2.Placenta_VentoTormo') or ct.startswith('dS3.Placenta_VentoTormo'):
         return 'Stromal.cell'
 
     if ct.startswith('T.cell') or ct.startswith('CD8.T.cell'):
@@ -332,16 +403,20 @@ def celltype_rename(ct):
 
     if ct.startswith('Myeloid.cell'):
         return 'Myeloid.cell'
+
     if ct.startswith('Neuron'):
         return 'Neuron'
+
     if ct.startswith('Conventional.dendritic.cell'):
-        return 'Conventional.dendritic.cell'
+        return 'Dendritic.cell'
+    if ct.startswith('DC1.Placenta_VentoTormo') or ct.startswith('Dendritic.cell'):
+        return 'Dendritic.cell'
 
     if ct.startswith('Unknown.Adult'):
         return 'other'
+
     if ct.startswith('Alpha.cell.Adult.Pancreas'):
         return 'Alpha.cell.Adult.Pancreas'
-
     if ct.startswith('Delta.cell.Adult.Pancreas'):
         return 'Delta.cell.Adult.Pancreas'
     if ct.startswith('Epsilon.cell.Adult.Pancreas'):
