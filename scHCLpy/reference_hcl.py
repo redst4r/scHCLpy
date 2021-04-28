@@ -285,7 +285,7 @@ def refined_but_coarser(ct):
         'Conventional.dendritic.cell_CCL17.high.Adult.Thyroid',
         'Dendritic.cell.Fetal.Pancreas',
         'DC1.Placenta VentoTormo',
-        'DC1.Placenta_VentoTormo'
+        'DC1.Placenta_VentoTormo',
         'Plasma.Placenta_VentoTormo',
         'Plasmacytoid.dendritic.cell.Adult.Thyroid',
         'NK',
@@ -317,13 +317,13 @@ def refined_but_coarser(ct):
     # Unknown: HCL correlation is TOO LOW to determine
     unknown = ['other']
 
-    epi_esophagus =[
-    'Basal.cell',
-    'Kerationcyte.Adult.Esophagus',
-    'Epithelial.cell_KRT13.high.Adult.Esophagus',
-    'Epithelial.cell_KRT4.high.Adult.Esophagus',
-    'Epithelial.cell_KRT17.high.Adult.Esophagus',
-    'Epithelial.cell_KRT7.high.Adult.Esophagus',
+    epi_esophagus = [
+        'Basal.cell',
+        'Kerationcyte.Adult.Esophagus',
+        'Epithelial.cell_KRT13.high.Adult.Esophagus',
+        'Epithelial.cell_KRT4.high.Adult.Esophagus',
+        'Epithelial.cell_KRT17.high.Adult.Esophagus',
+        'Epithelial.cell_KRT7.high.Adult.Esophagus',
     ]
 
     if ct in immune:
@@ -356,7 +356,7 @@ def celltype_rename(ct):
     if ct.startswith('Basal.cell'):
         return 'Basal.cell'
 
-    if ct.startswith('Endothelial.cell') or ct.startswith('Vascular.endothelial') or ct.startswith('Glomerular.endothelial.') or ct.startswith('Endo..m..Placenta') or ct.startswith('PV1.Placenta_VentoTormo') or ct.startswith('Endo.L.Placenta'):
+    if ct.startswith('Endothelial.cell') or ct.startswith('Vascular.endothelial') or ct.startswith('Glomerular.endothelial.') or ct.startswith('Endo..m..Placenta') or ct.startswith('PV1.Placenta_VentoTormo') or ct.startswith('Endo.L.Placenta') or ct.startswith('Arterial.endothelial'):
         return 'Endothelial.cell'
 
     if ct.startswith('Enteric.nerval.cell'):
@@ -371,9 +371,9 @@ def celltype_rename(ct):
     if ct.startswith('Goblet.cell'):
         return 'Goblet.cell'
 
-    if ct.startswith('Macrophage') or ct.startswith('M1.Macrophage') or ct.startswith('M2.Macrophage') or ct.startswith('Monocyte') or ct.startswith('dM1.Placenta_VentoTormo') or ct.startswith('dM2.Placenta_VentoTormo') or ct.startswith('M3.Placenta'):
+    if ct=='M2.macrophage..Adult.Lung' or ct.startswith('Macrophage') or ct.startswith('M1.Macrophage') or ct.startswith('M2.Macrophage') or ct.startswith('M2.macrophage')  or ct.startswith('Monocyte') or ct.startswith('dM1.Placenta_VentoTormo') or ct.startswith('dM2.Placenta_VentoTormo') or ct.startswith('M3.Placenta'):
         return 'Macrophage'
-
+    if
     if ct.startswith('Mast.cell'):
         return 'Mast.cell'
 
@@ -391,7 +391,7 @@ def celltype_rename(ct):
     if ct.startswith('dS1.Placenta VentoTormo') or ct.startswith('dS2.Placenta VentoTormo') or ct.startswith('dS3.Placenta VentoTormo') or ct.startswith('dS1.Placenta_VentoTormo') or ct.startswith('dS2.Placenta_VentoTormo') or ct.startswith('dS3.Placenta_VentoTormo'):
         return 'Stromal.cell'
 
-    if ct.startswith('T.cell') or ct.startswith('CD8.T.cell'):
+    if ct.startswith('T.cell') or ct.startswith('CD8.T.cell') or ct.startswith('Early.T.cell') or ct.startswith('Early.T.cell_S100A8.high.Fetal.Gonad'):
         return 'T.cell'
     if ct.startswith('Vascular.endothelial.cell'):
         return 'Vascular.endothelial.cell'
@@ -402,7 +402,7 @@ def celltype_rename(ct):
         return 'Enterocyte'
     if ct.startswith('Pit.cell_'):
         return 'Pit cell'
-    if ct.startswith('dNK') or ct.startswith('Blood.NK'):
+    if ct.startswith('dNK') or ct.startswith('Blood.NK') or ct =='NK' or ct.startswith('NK.cell'):
         return 'NK'
 
     if ct.startswith('Myeloid.cell'):
@@ -429,9 +429,19 @@ def celltype_rename(ct):
     # Lung
     if ct.startswith('AT1.cell'):
         return 'AT1.cell'
-    if ct.startswith('Ciliated.cell'):
+    if ct.startswith('Ciliated.cell') or ct.startswith('Int.secretory.ciliated.cell'):
         return 'Ciliated.cell'
     if ct.startswith('Mesothelial.cell'):
         return 'Mesothelial.cell'
+
+    if ct.startswith('Erythroid.cell'):
+        return 'Erythroid.cell'
+    if ct.startswith('Erythroid.progenitor.cell'):
+        return 'Erythroid.progenitor'
+    if ct.startswith('Lymphoid.progenitor.cell'):
+        return 'Lymphoid.progenitor'
+    if ct.lower().startswith('megakaryocyte.erythrocyte.progenitor') or ct.lower().startswith('megakaryocyte.erythroid.progenitor'):
+        return 'Megakaryocyte.Erythrocyte.Progenitor'
+
 
     return ct
