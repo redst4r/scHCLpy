@@ -184,10 +184,10 @@ def annotate_refined(scHCL_df, n_min:int):
     # filter away the infrequent annotations
     common_cts = scHCL_df['hcl_refined'].value_counts()
     common_cts = common_cts[common_cts > n_min].index
-    scHCL_df['hcl_refined'] = scHCL_df['hcl_refined'].apply(lambda x: x if x in common_cts else 'other')
+    scHCL_df['hcl_refined'] = scHCL_df['hcl_refined'].apply(lambda x: x if x in common_cts else 'low frequency')
 
     # also mark anything thats got shady correlations as "other" since it doesnt
     # really match any reference celltypes
-    scHCL_df.loc[scHCL_df['hcl_score'] < CORRELATION_CUTOFF, 'hcl_refined'] = 'other'
+    scHCL_df.loc[scHCL_df['hcl_score'] < CORRELATION_CUTOFF, 'hcl_refined'] = 'low correlation'
 
     return scHCL_df
