@@ -362,18 +362,14 @@ def celltype_rename(ct):
     if ct.startswith('Enteric.nerval.cell'):
         return 'Enteric.nerval.cell'
 
-    if ct.startswith('Fibroblast'):
-        return 'Fibroblast'
-
     if ct.startswith('Gastric.chief.cell'):
         return 'Gastric.chief.cell'
 
     if ct.startswith('Goblet.cell'):
         return 'Goblet.cell'
 
-    if ct=='M2.macrophage..Adult.Lung' or ct.startswith('Macrophage') or ct.startswith('M1.Macrophage') or ct.startswith('M2.Macrophage') or ct.startswith('M2.macrophage')  or ct.startswith('Monocyte') or ct.startswith('dM1.Placenta_VentoTormo') or ct.startswith('dM2.Placenta_VentoTormo') or ct.startswith('M3.Placenta'):
+    if ct=="MO.Placenta_VentoTormo" or ct=='M2.macrophage..Adult.Lung' or ct.startswith('Macrophage') or ct.startswith('M1.Macrophage') or ct.startswith('M2.Macrophage') or ct.startswith('M2.macrophage')  or ct.startswith('Monocyte') or ct.startswith('dM1.Placenta_VentoTormo') or ct.startswith('dM2.Placenta_VentoTormo') or ct.startswith('M3.Placenta'):
         return 'Macrophage'
-    if
     if ct.startswith('Mast.cell'):
         return 'Mast.cell'
 
@@ -388,10 +384,10 @@ def celltype_rename(ct):
     if ct.startswith('Stromal.cell'):
         return 'Stromal.cell'
 
-    if ct.startswith('dS1.Placenta VentoTormo') or ct.startswith('dS2.Placenta VentoTormo') or ct.startswith('dS3.Placenta VentoTormo') or ct.startswith('dS1.Placenta_VentoTormo') or ct.startswith('dS2.Placenta_VentoTormo') or ct.startswith('dS3.Placenta_VentoTormo'):
+    if ct.startswith('Fibroblast') or ct.startswith('dS1.Placenta VentoTormo') or ct.startswith('dS2.Placenta VentoTormo') or ct.startswith('dS3.Placenta VentoTormo') or ct.startswith('dS1.Placenta_VentoTormo') or ct.startswith('dS2.Placenta_VentoTormo') or ct.startswith('dS3.Placenta_VentoTormo'):
         return 'Stromal.cell'
 
-    if ct.startswith('T.cell') or ct.startswith('CD8.T.cell') or ct.startswith('Early.T.cell') or ct.startswith('Early.T.cell_S100A8.high.Fetal.Gonad'):
+    if  ct.startswith('Treg.cell.Fetal.Pancreas') or ct.startswith('Proliferating.T.cell.Adult.Lung') or ct.startswith('T.cell') or ct.startswith('CD8.T.cell') or ct.startswith('Early.T.cell') or ct.startswith('Early.T.cell_S100A8.high.Fetal.Gonad'):
         return 'T.cell'
     if ct.startswith('Vascular.endothelial.cell'):
         return 'Vascular.endothelial.cell'
@@ -411,9 +407,7 @@ def celltype_rename(ct):
     if ct.startswith('Neuron'):
         return 'Neuron'
 
-    if ct.startswith('Conventional.dendritic.cell'):
-        return 'Dendritic.cell'
-    if ct.startswith('DC1.Placenta_VentoTormo') or ct.startswith('Dendritic.cell'):
+    if ct.startswith('Conventional.dendritic.cell') or ct.startswith('DC1.Placenta_VentoTormo') or ct.startswith('Dendritic.cell'):
         return 'Dendritic.cell'
 
     if ct.startswith('Unknown.Adult'):
@@ -425,6 +419,17 @@ def celltype_rename(ct):
         return 'Delta.cell.Adult.Pancreas'
     if ct.startswith('Epsilon.cell.Adult.Pancreas'):
         return 'Epsilon.cell.Adult.Pancreas'
+
+
+    if ct=='Luminal.cell_AGR2.high.Breast.Epithelium_Nguyen' or ct == 'Luminal.cell_KRT23.high.Breast.Epithelium_Nguyen':
+        return 'Luminal.cell_Breast.Epithelium'
+
+
+    if ct in ['Fetal.hepatocyte.Liver_Camp', 'Adult.hepatocyte.Liver_Camp','Hepatocyte.Adult.Liver','Hepatocyte.like.cell.Fetal.Adrenal.Gland', 'Hepatocyte.like.cell.Fetal.Pancreas']:
+        return 'Hepatocyte'
+
+    if ct in ['D.cell..X.A.cell.Adult.Stomach','Chromaffin.cell.Adult.Stomach']:
+        return 'Chromaffin.cell'
 
     # Lung
     if ct.startswith('AT1.cell'):
