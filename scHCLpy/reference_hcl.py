@@ -270,6 +270,86 @@ def load_HCL_reference():
     return df_ref
 
 
+refined_celltypes_to_cell_ontology = {
+    'B.cell':  'CL:0000236',  # B
+    'Plasma.Placenta_VentoTormo': 'CL:0000946',  # Plasma
+    'T.cell': 'CL:0000084',  # Tcell
+    'Proliferating.T.cell.Adult.Lung': 'CL:0000084',  # Tcell,
+
+    'Macrophage': 'CL:0000235',
+    'M3.Placenta_VentoTormo': 'CL:0000235',
+    'MO.Placenta_VentoTormo' : 'CL:0000235',
+
+    'Mast.cell': 'CL:0000097',
+    'Neutrophil': 'CL:0000775',
+
+    'Conventional.dendritic.cell': 'CL:0000990',
+    'Conventional.dendritic.cell.Adult.Lung': 'CL:0000990',
+    'Conventional.dendritic.cell_LYZ.high.Adult.Thyroid': 'CL:0000990',
+    'Conventional.dendritic.cell_CCL17.high.Adult.Thyroid': 'CL:0000990',
+    'Dendritic.cell.Fetal.Pancreas': 'CL:0000451',
+    'Dendritic.cell': 'CL:0000451',
+    'DC1.Placenta VentoTormo' : 'CL:0000451',
+    'Plasmacytoid.dendritic.cell.Adult.Thyroid': 'CL:0000784',
+    #
+    'NK': "CL:0000623",
+    'Granulocyte.Adult.Omentum': 'CL:0000094',
+    'GMP.Lympho.Myeloid.Progenitor_Paresh': 'CL:0008001', #hematopoietic precursor cell
+    'MLP.Lympho.Myeloid.Progenitor_Paresh': 'CL:0008001', #hematopoietic precursor cell
+    'Myeloid.cell.Adult.Lung': 'CL:0008001',
+    'LMPP.Lympho.Myeloid.Progenitor_Paresh': 'CL:0008001',
+    # 'Lymphocyte.Adult.Epityphlon',
+    'Myeloid.cell': 'CL:0008001',
+
+    # Stroma
+    'Fibroblast': 'CL:0000057',
+    'Stromal.cell': 'CL:0000057',
+    'Vascular.endothelial.cell': 'CL:0000115',
+    'dS1.Placenta_VentoTormo': 'CL:0000057',
+    'dS2.Placenta_VentoTormo': 'CL:0000057',
+    'dS3.Placenta_VentoTormo': 'CL:0000057',
+    'Pancreatic.stellate.cell.Adult.Pancreas_Segerstolpe': 'CL:0002410',  # these are essentially fibroblasts
+    'Endothelial.cell': 'CL:0000115',
+    'Smooth.muscle.cell': 'CL:0000192',
+    'Myofibroblast_POSTN.high.Adult.Artery': 'CL:0000186',
+
+
+    'Basal.cell' : 'CL:0000646',
+    'Enteric.nerval.cell' : 'CL:0007011',
+    'Gastric.chief.cell' : 'CL:0000155', # called peptic cell
+    'Goblet.cell' : 'CL:0000160',
+    'Parietal.cell' : 'CL:0000162',
+    'Enterocyte.progenitor' : '',
+    'Enterocyte' : 'CL:0000584',
+    'Pit cell' : 'CL:0002180',  # mucous cell of stomach
+    'Neuron' : 'CL:0000540',
+    'Alpha.cell.Adult.Pancreas' : 'CL:0000171',
+    'Delta.cell.Adult.Pancreas' : 'CL:0000173',
+    'Epsilon.cell.Adult.Pancreas' : 'CL:0005019',
+    'Luminal.cell_Breast.Epithelium' : 'CL:0002326',
+    'Hepatocyte' : 'CL:0000182',
+    'Chromaffin.cell' : 'CL:0000166',
+    'AT1.cell' : 'CL:0002062',
+    'Ciliated.cell' : 'CL:0002145',
+    'Mesothelial.cell' : 'CL:0000077',
+    'Erythroid.cell' : 'CL:0000232',
+    'Erythroid.progenitor' : 'CL:0000038',
+    'Lymphoid.progenitor' : 'CL:0000232',
+    'Megakaryocyte.Erythrocyte.Progenitor' : 'CL:0000050',
+    'Kerationcyte.Adult.Esophagus': 'CL:0002252',
+    'Epithelial.cell_KRT13.high.Adult.Esophagus': 'CL:0002252',
+    'Epithelial.cell_KRT4.high.Adult.Esophagus': 'CL:0002252',
+    'Epithelial.cell_KRT17.high.Adult.Esophagus': 'CL:0002252',
+    'Epithelial.cell_KRT7.high.Adult.Esophagus': 'CL:0002252',
+    }
+
+
+
+# 'Epithelium':
+# 'Stroma': 'CL:0002320',  # connective tissue cell
+# 'Immune': 'CL:0000988',  #hematopoietic cell
+
+
 def refined_but_coarser(ct):
 
     immune = [
@@ -284,6 +364,7 @@ def refined_but_coarser(ct):
         'Conventional.dendritic.cell_LYZ.high.Adult.Thyroid',
         'Conventional.dendritic.cell_CCL17.high.Adult.Thyroid',
         'Dendritic.cell.Fetal.Pancreas',
+        'Dendritic.cell',
         'DC1.Placenta VentoTormo',
         'DC1.Placenta_VentoTormo',
         'Plasma.Placenta_VentoTormo',
@@ -298,8 +379,6 @@ def refined_but_coarser(ct):
         'Proliferating.T.cell.Adult.Lung',
         'LMPP.Lympho.Myeloid.Progenitor_Paresh',
         'Lymphocyte.Adult.Epityphlon',
-
-
     ]
     stroma = [
         'Fibroblast',
@@ -311,6 +390,7 @@ def refined_but_coarser(ct):
         'dS2.Placenta_VentoTormo',
         'dS3.Placenta_VentoTormo',
         'Myofibroblast_POSTN.high.Adult.Artery',
+        'Pancreatic.stellate.cell.Adult.Pancreas_Segerstolpe'  # these are essentially fibroblasts
     ]
     other_stuff = ['Erythroid.cell.Placenta_Tsang', 'Neuron']
 
