@@ -298,8 +298,8 @@ refined_celltypes_to_cell_ontology = {
     'MLP.Lympho.Myeloid.Progenitor_Paresh': 'CL:0008001', #hematopoietic precursor cell
     'Myeloid.cell.Adult.Lung': 'CL:0008001',
     'LMPP.Lympho.Myeloid.Progenitor_Paresh': 'CL:0008001',
-    # 'Lymphocyte.Adult.Epityphlon',
     'Myeloid.cell': 'CL:0008001',
+    'Lymphocyte.Adult.Epityphlon': 'CL:0000542',
 
     # Stroma
     'Fibroblast': 'CL:0000057',
@@ -309,28 +309,33 @@ refined_celltypes_to_cell_ontology = {
     'dS2.Placenta_VentoTormo': 'CL:0000057',
     'dS3.Placenta_VentoTormo': 'CL:0000057',
     'Pancreatic.stellate.cell.Adult.Pancreas_Segerstolpe': 'CL:0002410',  # these are essentially fibroblasts
+    'Activated_stellate.cell.Adult.Pancreas_Baron': 'CL:0002410',
+    'Quiescent.stellate.cell.Adult.Pancreas_Baron': 'CL:0002410',
+    'Pancreatic.stellate.cell': 'CL:0002410',
+
     'Endothelial.cell': 'CL:0000115',
     'Smooth.muscle.cell': 'CL:0000192',
     'Myofibroblast_POSTN.high.Adult.Artery': 'CL:0000186',
 
-
-    'Basal.cell' : 'CL:0000646',
+    'Basal.cell.Adult.Esophagus': 'CL:0002252',
     'Enteric.nerval.cell' : 'CL:0007011',
     'Gastric.chief.cell' : 'CL:0000155', # called peptic cell
     'Goblet.cell' : 'CL:0000160',
     'Parietal.cell' : 'CL:0000162',
-    'Enterocyte.progenitor' : '',
+    'Enterocyte.progenitor' : 'CL:0000584',
     'Enterocyte' : 'CL:0000584',
     'Pit cell' : 'CL:0002180',  # mucous cell of stomach
     'Neuron' : 'CL:0000540',
     'Alpha.cell.Adult.Pancreas' : 'CL:0000171',
     'Delta.cell.Adult.Pancreas' : 'CL:0000173',
     'Epsilon.cell.Adult.Pancreas' : 'CL:0005019',
-    'Luminal.cell_Breast.Epithelium' : 'CL:0002326',
+    'Gamma.cell.Adult.Pancreas' : "CL:0002275",
+
     'Hepatocyte' : 'CL:0000182',
     'Chromaffin.cell' : 'CL:0000166',
-    'AT1.cell' : 'CL:0002062',
-    'Ciliated.cell' : 'CL:0002145',
+    'Epithelial.cell.Adult.Stomach': 'CL:0002178',
+
+
     'Mesothelial.cell' : 'CL:0000077',
     'Erythroid.cell' : 'CL:0000232',
     'Erythroid.progenitor' : 'CL:0000038',
@@ -341,6 +346,43 @@ refined_celltypes_to_cell_ontology = {
     'Epithelial.cell_KRT4.high.Adult.Esophagus': 'CL:0002252',
     'Epithelial.cell_KRT17.high.Adult.Esophagus': 'CL:0002252',
     'Epithelial.cell_KRT7.high.Adult.Esophagus': 'CL:0002252',
+
+    'Ductal.cell.Adult.Pancreas_Baron': 'CL:0002079',
+    'Duct.cell.Adult.Pancreas_Muraro': 'CL:0002079',
+    'Ionocyte.Airway.Epithelium_Plasschaert': 'CL:0017000',
+    'Mucous.neck.cell.Adult.Duodenum': 'CL:0002181',   # its annoated in duodenum, but in our data its gastric!
+    'Schwann.cell.Adult.Pancreas_Baron': 'CL:0002573',
+    'Striated.muscle.cell.Adult.Muscle' : 'CL:0000737',
+    'Gastric.mucosa.cell.Adult.Stomach' : 'CL:0002180',
+    'Mucosal.aquamous.epithelial.cell.Adult.Esophagus':  'CL:0002252',
+    'Epithelial.cell_KRT16.high.Adult.Esophagus': 'CL:0002252',
+    'Myoid.cell.Testis_Guo': 'CL:0002481',
+
+    'Basal.cell.Airway': 'CL:0002633',  # lung basal
+    'BRUSH..PNEC.Airway.Epithelium_Plasschaert': 'CL:0000082', # not really sure what that is , we just make it epithelial cell of the lung
+    'Secretory.cell.Airway.Epithelium_Plasschaert': 'CL:1000272',  # secretory
+    'Int.basal.secretory.cell.Airway.Epithelium_Plasschaert': 'CL:1000272',  # secretory,
+    'Secretory.epithelial.cell.Adult.Trachea': 'CL:1000272',  # secretory,
+    'FOXN4..cell.Airway.Epithelium_Plasschaert': 'CL:0000082', # not really sure what that is , we just make it epithelial cell of the lung,
+    'Club.cell': 'CL:0000158',
+    'Epithelial.cell_MMP7.high.Adult.Trachea': 'CL:0000082', # not really sure what that is , we just make it epithelial cell of the lung,
+    'AT1.cell' : 'CL:0002062',
+    'AT2.cell' : 'CL:0002063',
+    'Ciliated.cell' : 'CL:0002145',
+    #
+    'low correlation': 'unknown',
+    'low frequency': 'unknown',
+    'Mesenchymal.cell.Adult.Pancreas_Muraro': 'unknown',
+    'mix.cells.Placenta_VentoTormo': 'unknown',
+
+    'Trophoblast..Preimplantation.Embryo': 'CL:0000351',
+
+    'Luminal.cell_Breast.Epithelium' : 'CL:0002326',
+    'Luminal.cell_SAA2.high.Breast.Epithelium_Nguyen': 'CL:0002326',
+    'Luminal.cell_CD74.high.Breast.Epithelium_Nguyen': 'CL:0002326',
+    'Basal.cell_IL24.high.Breast.Epithelium_Nguyen': 'CL:0000646', #basal cell
+    'Basal.cell_KRT17.high.Breast.Epithelium_Nguyen': 'CL:0000646', #basal cell
+    'Basal_ACTA2.high.Breast.Epithelium_Nguyen': 'CL:0000646', #basal cell
     }
 
 
@@ -430,11 +472,19 @@ def celltype_rename(ct):
     if ct[-1].isnumeric():
         ct = ct[:-1]
 
-    if ct.startswith('B.cell') or ct.startswith('Proliferating.B.cell'):
+    if ct in ['Pancreatic.stellate.cell.Adult.Pancreas_Segerstolpe',  'Activated_stellate.cell.Adult.Pancreas_Baron', 'Quiescent.stellate.cell.Adult.Pancreas_Baron']:
+        return 'Pancreatic.stellate.cell'
+
+    if ct.startswith('B.cell') or ct.startswith('Proliferating.B.cell') or ct.startswith('Proliferating..B.cell'):
         return 'B.cell'
 
-    if ct.startswith('Basal.cell'):
-        return 'Basal.cell'
+    if ct.startswith('Basal.cell.Adult.Esophagus'):
+        return 'Basal.cell.Adult.Esophagus'
+    if ct.startswith('Basal.cell.Airway') or ct=='Basal.epithelial.cell.Adult.Lung':
+        return 'Basal.cell.Airway'
+    if ct == 'Basal.cell_KRT6A.high.Adult.Trachea' or ct == 'Basal.cell_S100A2.high.Adult.Trachea':
+        return 'Basal.cell.Airway'
+
 
     if ct.startswith('Endothelial.cell') or ct.startswith('Vascular.endothelial') or ct.startswith('Glomerular.endothelial.') or ct.startswith('Endo..m..Placenta') or ct.startswith('PV1.Placenta_VentoTormo') or ct.startswith('Endo.L.Placenta') or ct.startswith('Arterial.endothelial'):
         return 'Endothelial.cell'
@@ -448,7 +498,7 @@ def celltype_rename(ct):
     if ct.startswith('Goblet.cell'):
         return 'Goblet.cell'
 
-    if ct=="MO.Placenta_VentoTormo" or ct=='M2.macrophage..Adult.Lung' or ct.startswith('Macrophage') or ct.startswith('M1.Macrophage') or ct.startswith('M2.Macrophage') or ct.startswith('M2.macrophage')  or ct.startswith('Monocyte') or ct.startswith('dM1.Placenta_VentoTormo') or ct.startswith('dM2.Placenta_VentoTormo') or ct.startswith('M3.Placenta'):
+    if ct =='dM3.Placenta_VentoTormo' or ct=="MO.Placenta_VentoTormo" or ct=='M2.macrophage..Adult.Lung' or ct.startswith('Macrophage') or ct.startswith('M1.Macrophage') or ct.startswith('M2.Macrophage') or ct.startswith('M2.macrophage')  or ct.startswith('Monocyte') or ct.startswith('dM1.Placenta_VentoTormo') or ct.startswith('dM2.Placenta_VentoTormo') or ct.startswith('M3.Placenta'):
         return 'Macrophage'
     if ct.startswith('Mast.cell'):
         return 'Mast.cell'
@@ -467,8 +517,11 @@ def celltype_rename(ct):
     if ct.startswith('Fibroblast') or ct.startswith('dS1.Placenta VentoTormo') or ct.startswith('dS2.Placenta VentoTormo') or ct.startswith('dS3.Placenta VentoTormo') or ct.startswith('dS1.Placenta_VentoTormo') or ct.startswith('dS2.Placenta_VentoTormo') or ct.startswith('dS3.Placenta_VentoTormo'):
         return 'Stromal.cell'
 
-    if  ct.startswith('Treg.cell.Fetal.Pancreas') or ct.startswith('Proliferating.T.cell.Adult.Lung') or ct.startswith('T.cell') or ct.startswith('CD8.T.cell') or ct.startswith('Early.T.cell') or ct.startswith('Early.T.cell_S100A8.high.Fetal.Gonad'):
+    if  ct.startswith('Treg.cell.Fetal.Pancreas') or ct.startswith('Proliferating.T.cell') or ct.startswith('T.cell') or ct.startswith('CD8.T.cell') or ct.startswith('Early.T.cell') or ct.startswith('Early.T.cell_S100A8.high.Fetal.Gonad'):
         return 'T.cell'
+    if ct == 'Actived.T.cell.Adult.Lung':
+        return 'T.cell'
+
     if ct.startswith('Vascular.endothelial.cell'):
         return 'Vascular.endothelial.cell'
 
@@ -499,7 +552,8 @@ def celltype_rename(ct):
         return 'Delta.cell.Adult.Pancreas'
     if ct.startswith('Epsilon.cell.Adult.Pancreas'):
         return 'Epsilon.cell.Adult.Pancreas'
-
+    if ct.startswith('Gamma.cell.Adult.Pancreas'):
+        return 'Gamma.cell.Adult.Pancreas' # CL:0002275
 
     if ct=='Luminal.cell_AGR2.high.Breast.Epithelium_Nguyen' or ct == 'Luminal.cell_KRT23.high.Breast.Epithelium_Nguyen':
         return 'Luminal.cell_Breast.Epithelium'
@@ -512,9 +566,14 @@ def celltype_rename(ct):
         return 'Chromaffin.cell'
 
     # Lung
+    if ct.startswith('Club.cell'):
+        return 'Club.cell'
     if ct.startswith('AT1.cell'):
         return 'AT1.cell'
-    if ct.startswith('Ciliated.cell') or ct.startswith('Int.secretory.ciliated.cell'):
+    if ct.startswith('AT2.cell'):
+        return 'AT2.cell'
+
+    if ct.startswith('Ciliated.cell') or ct.startswith('Int.secretory.ciliated.cell') or ct =='Ciliated.epithelial.cell.Adult.Trachea':
         return 'Ciliated.cell'
     if ct.startswith('Mesothelial.cell'):
         return 'Mesothelial.cell'
