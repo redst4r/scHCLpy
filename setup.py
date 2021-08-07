@@ -15,5 +15,7 @@ setup(name='scHCLpy',
           'numpy',
           'scipy',
           'pandas',
+          'obonet',
+          'networkx'
           ],
       zip_safe=False)
