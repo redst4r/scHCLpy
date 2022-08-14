@@ -63,6 +63,7 @@ class HCLReference_adata():
         """
         return self.reference_df.columns.values
 
+
 def process_adata(adata, reference_df):
     """
     matches the set of genes between query adata and reference to a common
@@ -156,6 +157,11 @@ def call_celltypes(transformed_adata, ref_df, n_cores):
     return scHCL_df, scHCL_df_extended_Celltypes
 
 
+def create_ontology_id_to_name_mapping():
+    graph = obonet.read_obo('http://purl.obolibrary.org/obo/cl/cl-basic.obo')
+    id_to_name = {id_: data.get('name') for id_, data in graph.nodes(data=True)}
+    return id_to_name
+
 def scHCL_adata(adata, verbose=False, n_cores=1, n_min=10):
     """
     previous main function
@@ -168,16 +174,14 @@ def scHCL_adata(adata, verbose=False, n_cores=1, n_min=10):
     scHCL_df = annotate_refined(scHCL_df, n_min)
 
     # cell ontology
-    graph = obonet.read_obo('http://purl.obolibrary.org/obo/cl/cl-basic.obo')
-    id_to_name = {id_: data.get('name') for id_, data in graph.nodes(data=True)}
-
+    id_to_name = create_ontology_id_to_name_mapping()
     scHCL_df['CLid'] = scHCL_df['hcl_refined'].apply(lambda x: reference_hcl.refined_celltypes_to_cell_ontology[x] if x in reference_hcl.refined_celltypes_to_cell_ontology else 'unknown')
     scHCL_df['CL_name'] = scHCL_df['CLid'].apply(lambda x: id_to_name[x] if x in id_to_name else 'unknown')
 
     return scHCL_df, scHCL_df_extended_Celltypes
 
 
-def annotate_refined(scHCL_df, n_min:int):
+def annotate_refined(scHCL_df, n_min: int):
     """
     The celltypes in the original scHCL are a bit nasty, with nonstandard names
     and the same celltype being annotated with 3 diferent strings/names
