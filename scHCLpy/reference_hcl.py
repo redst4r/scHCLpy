@@ -385,15 +385,12 @@ refined_celltypes_to_cell_ontology = {
     'Basal_ACTA2.high.Breast.Epithelium_Nguyen': 'CL:0000646', #basal cell
     }
 
-
-
 # 'Epithelium':
 # 'Stroma': 'CL:0002320',  # connective tissue cell
 # 'Immune': 'CL:0000988',  #hematopoietic cell
 
 
 def refined_but_coarser(ct):
-
     immune = [
         'B.cell',
         'T.cell',

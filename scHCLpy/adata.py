@@ -27,7 +27,7 @@ def construct_reference(adata, celltype_field):
         A = adata[adata.obs[celltype_field]==ct]
         for i in range(n_repeats):
             ix = np.random.choice(len(A), size=np.minimum(n_cells, len(A)), replace=False)
-            X = A[ix].X.A
+            X = A[ix].X.toarray()
             X = X.sum(0)
             X = 1e5 * X/X.sum()
             X = np.log(1+X)
@@ -131,7 +131,7 @@ def calc_correlation_in_batches(adata, reference_df, BATCHSIZE=1000, n_cores=1):
         for i in tqdm.tqdm(range(0, len(adata_sorted), BATCHSIZE)):
             _tmp_adata = adata_sorted[i:i+BATCHSIZE]
 
-            X_query = _tmp_adata.X.A
+            X_query = _tmp_adata.X.toarray()
             # C = 1 - cdist(X_query, reference_df, 'correlation')
             C = 1 - pairwise_distances(X_query, reference_df, metric='correlation', n_jobs=n_cores)
             C = pd.DataFrame(C, index=_tmp_adata.obs.index, columns=reference_df.index)

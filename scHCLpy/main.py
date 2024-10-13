@@ -32,7 +32,7 @@ renames = {_:synonym_2symbol[_] for _ in not_found_genes if _ in synonym_2symbol
 
 
 def adata_to_df(adata, use_raw):
-    query_df = pd.DataFrame(adata.raw.X.A if use_raw else adata.X.A,
+    query_df = pd.DataFrame(adata.raw.X.toarray() if use_raw else adata.X.toarray(),
                             index=adata.obs.index,
                             columns=adata.raw.var.index if use_raw else adata.var.index)
     return query_df
