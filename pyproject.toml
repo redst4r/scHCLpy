@@ -1,0 +1,26 @@
+[project]
+name = "scHCLpy"
+version = "0.2.0"
+description = "A simplistic python version of the scHCL R package"
+# readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy",
+    "pandas",
+    "scipy",
+    "obonet", 
+    "networkx",
+    "scikit-learn",
+    "anndata"
+]
+authors = [
+    {name = "redst4r", email = "redst4r@web.de"},
+]
+license = "GPL-3.0-or-later"
+
+# TODO: including the package data
+# 
+# include_package_data=True,
+
+[project.urls]
+Homepage = "https://github.com/redst4r/scHCLpy.git"
